@@ -142,61 +142,8 @@ rule SilentNet_V1_Awareness {
 
   <footer class="text-center" style="margin-top: 4rem; padding-bottom: 2rem;">
     <p><em>Currently this is all the information i have if i do learn more about this malware i will come back to it.</em></p>
-    <p class="text-tertiary">Analysis by 1xfuzion | Inspired by 0xresetti | Friend: Fdrg</p>
+    <p class="text-tertiary">Analysis by 1xfuzion | Inspired by 0xresetti  </p>
   </footer>
-</div>
-</body>
-</html>
-    </ol>
-  </section>
-
-  <section class="stack--md">
-    <h2>0x02: Feature Breakdown (Free vs Premium)</h2>
-    <p>SilentNet is split into two tiers, gating the most invasive features behind a paywall.</p>
-    
-    <h3>The Stealer (Free Tier)</h3>
-    <ul>
-      <li><strong>Discord Injection:</strong> Modifies <code>discord_desktop_core</code> to intercept tokens and MFA codes in real-time.</li>
-      <li><strong>Session Theft:</strong> Standard extraction of Minecraft session IDs and browser cookies.</li>
-    </ul>
-
-    <h3>The R.A.T. (Premium Tier)</h3>
-    <ul>
-      <li><strong>Exodus Injection:</strong> Targets crypto seeds and private keys.</li>
-      <li><strong>Remote Control:</strong> Live webcam, screen sharing, and remote CMD access.</li>
-      <li><strong>Payload Dropper:</strong> Can be used to install Worms or Ransomware as additional stages.</li>
-    </ul>
-  </section>
-
-  <hr>
-
-  <section class="stack--md">
-    <h2>0x03: Removal</h2>
-    <div class="card card--danger">
-      <h3>Step 1: Account Security</h3>
-      <p>Reset passwords for Microsoft, Discord, and Email from a <strong>different device</strong> immediately.</p>
-    </div>
-
-    <h3>Step 2: System Purge</h3>
-    <p>Run CMD as Administrator to clear the persistent Python environment:</p>
-    <pre class="card" style="background: #000; color: #0f0; padding: 1.5rem;">
-taskkill /F /IM python.exe /T
-cd /d %LOCALAPPDATA%\Microsoft\Windows\NtProfileIndex
-del /F /Q /A *
-del /F /S /Q "%APPDATA%\.minecraft\mods\*.jar"
-    </pre>
-
-    <div class="card card--highlight">
-      <h3>Step 3: The Better Option</h3>
-      <p>Because SilentNet injects itself into local app files (like Discord), a simple file deletion might miss something. <strong>The better option is a full Windows reinstall</strong> to ensure no backdoors remain.</p>
-    </div>
-  </section>
-
-  <footer class="text-center" style="margin-top: 4rem; padding-bottom: 2rem;">
-    <p><em>Currently, this is all the information I have. If I learn more about this malware, I will come back to it.</em></p>
-    <p class="text-tertiary">Technical Breakdown by 1xfuzion</p>
-  </footer>
-
 </div>
 </body>
 </html>
