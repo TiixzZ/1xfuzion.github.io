@@ -2,38 +2,151 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analysis | SilentNet R.A.T</title>
+  <title>SNET Awareness | 1xfuzion</title>
   <link rel="stylesheet" href="../base.css">
 </head>
 <body>
 <div class="container container--narrow stack--lg">
   <br>
-  <a href="../index.html" class="text-muted" style="font-family: var(--font-mono);">root@1xfuzion:~# cd ..</a>
+  <a href="../index.html" class="text-muted">root@1xfuzion:~# cd ..</a>
   
-  <header class="card card--elevated stack--sm" style="border-left: 4px solid var(--accent); margin-top: 20px;">
-    <code style="color: var(--accent-light);">[REPORT_ID: SN-V1]</code>
+  <header class="stack--sm">
     <h1>SilentNet R.A.T: A Minecraft Rat and Stealer Targeting DonutSMP and other users.</h1>
-    <p class="text-muted">Analysis of modular bootstrap delivery and native injections.</p>
   </header>
 
   <section class="stack--sm">
-    <h2>0x00: Introduction</h2>
+    <h2>0x00: the context</h2>
     <p>
-      SilentNet v1 is a step up from previous stealers like Weedhack due to its modular design. While it shares some DNA with the "Aseity" rigging mods found on DonutSMP, its primary function is the exfiltration of sensitive user data through a multi-stage delivery system. It's more effective than basic stealers simply because it doesn't rely solely on the Java environment to do its dirty work.
+      So I was lowkey on the prestige client discord and shit was crazy. I saw a screenshot of some mf giving someone a ratted krypton client. When I saw it, I told them it looked so weedhack looking lmao.
+    </p>
+    <p>
+      A guy who’s now my friend called <strong>Fdrg</strong> told me it was actually <strong>SNET</strong> (SilentNet). Since 0xresetti inspired me so much I had to make this so people know what they're actually putting on their PC.
+    </p>
+    <p>
+      DonutSMP is straight up a playground for these mfs and they are the predators. They really out here preying on little kids who just want to play the game, and it's fucked up. 
     </p>
   </section>
 
   <hr>
 
   <section class="stack--md">
-    <h2>0x01: The Bootstrap Process (How it Works)</h2>
-    <p>The primary danger of SilentNet is its <strong>Stage-Chain</strong>. It uses a small initial loader to bring in much larger, native tools:</p>
+    <h2>0x01: the file structure</h2>
+    <p>
+      When I opened the file shit looked so bad. I didn’t even know what the obfuscator was at first until I checked that weird ass file and realized it’s allatori. It’s a mess of scrambled classes, but once you start digging into <code>com/libmod/</code>, the actual logic starts showing up.
+    </p>
+
+<pre class="card" style="background: #0a0614; color: #a5d6ff; padding: 1.5rem; font-size: 0.85rem; border: 1px solid var(--glass-border);">
+mod.jar (SNET v1 Stage 1)/
+├── com/libmod/
+│   ├── Libmod.java      <-- This is the entry point. It hooks class_310 for token theft.
+│   ├── Main.java        <-- The dropper. This pulls the python shit from the web.
+│   ├── RpcHelper.java   <-- The blockchain connector.
+│   └── LangProvider.java <-- This is where it hides your UUID in 'lang.dat'.
+├── iweepkikjyqovrst.class <-- The Allatori string decryption engine.
+└── resources/
+    └── fabric.mod.json   <-- Standard Fabric setup to look "legit".
+</pre>
+  </section>
+
+  <section class="stack--md">
+    <h2>0x02: how the bootstrap works</h2>
+    <p>
+      SNET is definitely "better" than weedhack because it doesn't just run inside Minecraft. It uses a bootstrap method to move the infection to your actual Windows system. 
+    </p>
+    <p>
+      It hits <code>bootstrap.pypa.io</code> to grab a headless python environment. It basically builds a ghost version of Python in your <code>%LOCALAPPDATA%</code> folder. Once that’s live, it starts running scripts that your antivirus probably won't even flag because it thinks "python.exe" is just a normal program.
+    </p>
     
-    <ol>
-      <li><strong>Execution:</strong> The <code>.jar</code> file hooks into Fabric/Forge.</li>
-      <li><strong>Python Deployment:</strong> It pulls a headless Python runtime from <code>bootstrap.pypa.io</code>. This allows the attacker to run scripts that are harder for traditional Java-based security to monitor.</li>
-      <li><strong>C2 Persistence:</strong> It uses the <strong>Polygon Blockchain</strong> (Matic) to retrieve server IPs. This is simply a more reliable way to prevent the RAT from being shut down by domain reports.</li>
+    <p>
+      This is why just deleting the mod doesn't do shit. The python process is already running in the background, and it's independent of Minecraft. Even if you close the game, the R.A.T. stays alive.
+    </p>
+  </section>
+
+  <section class="stack--md">
+    <h2>0x03: the blockchain C2</h2>
+    <p>
+      This is the part that's actually annoying. SNET uses the <strong>Polygon (Matic) blockchain</strong> to find its server. 
+    </p>
+    <p>
+      Inside <code>RpcHelper.class</code>, there's a link to <code>rpc-mainnet.matic.quiknode.pro</code>. Instead of looking up a website (which can get banned), the malware checks a specific blockchain address to see what the current IP for the "panel" is. As long as the dev has access to that crypto wallet, they can change the IP whenever they want, and every infected kid’s PC will automatically reconnect to the new one lmao.
+    </p>
+  </section>
+
+  <section class="stack--md">
+    <h2>0x04: free vs premium tiers</h2>
+    <p>
+      The dev is out here trying to act like a legit business by having tiers. It's crazy how many skids are spreading the free version just to feel cool on the Prestige discord.
+    </p>
+    
+    <p><strong>The Free Stealer:</strong></p>
+    <ul>
+      <li><strong>Discord Injection:</strong> It modifies your <code>discord_desktop_core</code> files. This is the worst part because it stays there forever. It watches you type your password and grabs your MFA codes in real-time.</li>
+      <li><strong>Token Stealing:</strong> Grabs your Minecraft session, browser cookies, and saved passwords.</li>
+      <li><strong>Panel Logging:</strong> Sends your HWID and all your info to the skid who sent you the file.</li>
+    </ul>
+
+    <p><strong>The Premium R.A.T:</strong></p>
+    <ul>
+      <li><strong>Exodus Injection:</strong> This targets your crypto. It looks for the 12-word recovery seeds for Exodus, MetaMask, and Atomic wallets. If you have money in there, it's gone.</li>
+      <li><strong>Remote Shell:</strong> The attacker can literally open a CMD window on your PC and do whatever they want.</li>
+      <li><strong>Webcam & Screen:</strong> They can watch you and hear you through your mic without you knowing.</li>
+      <li><strong>Worm Propagation:</strong> It can automatically send the "cracked client" to everyone on your friends list.</li>
+    </ul>
+  </section>
+
+  <section class="stack--md">
+    <h2>0x05: manual removal (if u can't reinstall)</h2>
+    <p>
+      If u ran this shit, you need to act fast. These mfs are preying on kids who don't know how to clean a PC properly.
+    </p>
+    
+    <div class="card card--danger">
+      <h3>Step 1: Lockdown</h3>
+      <p>GET ON YOUR PHONE. Change your Discord password, your Microsoft password, and your Email. Enable 2FA on everything. Log out of all sessions everywhere.</p>
+    </div>
+
+    <h3>Step 2: Kill the Process</h3>
+    <p>The python environment hides in a specific spot. Open CMD as Admin and run these one by one:</p>
+    
+    <pre class="card" style="background: #000; color: #0f0; padding: 1rem;">
+taskkill /F /IM python.exe /T
+cd /d %LOCALAPPDATA%\Microsoft\Windows\NtProfileIndex
+del /F /Q /A *
+del /F /S /Q "%APPDATA%\.minecraft\mods\*.jar"
+    </pre>
+
+    <div class="card card--highlight">
+      <h3>The Better Option</h3>
+      <p>
+        I'm telling u now, these injections are hard to find. They hide in Discord's local files and sometimes even in Chrome's extension folders. <strong>The only way to be 100% safe is to just reinstall Windows.</strong> Wipe the drive, start over. It's better than having some random mf from the prestige discord watching you through your webcam lmao.
+      </p>
+    </div>
+  </section>
+
+  <section class="stack--md">
+    <h2>0x06: yara rules (for researchers)</h2>
+    <p>If anyone actually wants to track this shit, here are some strings that appear in the SNET builds:</p>
+<pre class="card" style="background: #1a1b26; color: #9ece6a; padding: 1rem; font-size: 0.85rem; border: 1px solid var(--glass-border);">
+rule SilentNet_V1_Awareness {
+    strings:
+        $a = "com/libmod/"
+        $b = "RpcHelper"
+        $c = "rpc-mainnet.matic.quiknode.pro"
+        $d = "NtProfileIndex"
+        $e = "bootstrap.pypa.io"
+    condition:
+        3 of them
+}
+</pre>
+  </section>
+
+  <footer class="text-center" style="margin-top: 4rem; padding-bottom: 2rem;">
+    <p><em>Currently this is all the information i have if i do learn more about this malware i will come back to it.</em></p>
+    <p class="text-tertiary">Analysis by 1xfuzion | Inspired by 0xresetti | Friend: Fdrg</p>
+  </footer>
+</div>
+</body>
+</html>
     </ol>
   </section>
 
